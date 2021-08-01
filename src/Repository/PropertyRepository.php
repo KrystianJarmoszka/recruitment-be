@@ -3,7 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Property;
+use App\Entity\Traits\RemovableTrait;
+use App\Repository\Filter\BaseFilter;
+use App\Repository\Filter\PropertyListFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,32 +23,48 @@ class PropertyRepository extends ServiceEntityRepository
         parent::__construct($registry, Property::class);
     }
 
-    // /**
-    //  * @return Property[] Returns an array of Property objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param PropertyListFilter $listFilterModel
+     * @return int|mixed|string
+     * @throws \Exception
+     */
+    public function filterAndReturn(PropertyListFilter $listFilterModel)
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb = $this->createQueryBuilder('e');
 
-    /*
-    public function findOneBySomeField($value): ?Property
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $this->applyFilter($qb, $listFilterModel);
+
+        return $qb->getQuery()->getResult();
     }
-    */
+
+    public function applyFilter(QueryBuilder $qb, BaseFilter $listFilterModel): PropertyRepository
+    {
+        $this->hideRemoved($qb);
+
+        if ($listFilterModel->getOrder()) {
+            $qb->orderBy(
+                'e.id',
+                $listFilterModel->getOrder()
+            );
+        }
+
+        if ($listFilterModel->getName()) {
+            $qb->andWhere('e.name LIKE :name');
+
+            $qb->setParameter(':name', sprintf('%%%s%%', $listFilterModel->getName()));
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @return $this
+     */
+    public function hideRemoved(QueryBuilder $qb): PropertyRepository
+    {
+        RemovableTrait::hideRemoved('e', $qb);
+
+        return $this;
+    }
 }

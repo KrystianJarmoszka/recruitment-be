@@ -2,8 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Constants\RemovableInterface;
 use App\Entity\Property;
+use App\Form\Type\PropertyFilterType;
 use App\Form\Type\PropertyType;
+use App\Repository\Filter\PropertyListFilter;
+use Knp\Component\Pager\Pagination\AbstractPagination;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,15 +25,35 @@ class PropertyController extends AbstractController
      * @Route("", name="api_property_get_collection", methods={"GET"})
      *
      * @param Request $request
+     * @param PaginatorInterface $paginator
      * @return Response
      */
-    public function getCollection(Request $request): Response
+    public function getCollection(Request $request, PaginatorInterface $paginator): Response
     {
+        $filter = new PropertyListFilter();
+        $form = $this->createForm(PropertyFilterType::class, $filter, ['method' => 'GET']);
+        $form->handleRequest($request);
+
+        if ($this->getFormErrorMessages($form)) {
+            return $this->returnViewResponse($this->getFormErrorMessages($form), Response::HTTP_BAD_REQUEST);
+        }
+
         $properties = $this->getDoctrine()
             ->getRepository(Property::class)
-            ->findAll();
+            ->filterAndReturn($filter);
 
-        return $this->returnViewResponse($properties);
+        /** @var AbstractPagination $pagination */
+        $pagination = $paginator->paginate(
+            $properties,
+            $filter->getPage(),
+            PropertyListFilter::LIMIT
+        );
+
+        return $this->returnCollectionViewResponse(
+            $pagination,
+            Response::HTTP_OK,
+            ['list']
+        );
     }
 
     /**
@@ -93,11 +118,13 @@ class PropertyController extends AbstractController
      *
      * @param Property $property
      * @return object|void
+     * @throws \Exception
      */
     public function delete(Property $property): Response
     {
+        $property->setRemovable(RemovableInterface::REMOVED);
+
         $em = $this->getDoctrine()->getManager();
-        $em->remove($property);
         $em->flush();
 
         return $this->returnViewResponse(null, Response::HTTP_NO_CONTENT);
