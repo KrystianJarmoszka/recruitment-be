@@ -8,6 +8,7 @@ namespace App\Repository\Filter;
  */
 class PropertyListFilter extends BaseFilter
 {
+    const LIMIT = 10;
     const GLOBAL_SEARCH_LIMIT = 5;
 
     /**

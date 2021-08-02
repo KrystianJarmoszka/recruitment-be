@@ -52,7 +52,7 @@ class Job
     private $description;
 
     /**
-     * @ORM\Column(type="string", length=10)
+     * @ORM\Column(type="string", length=15)
      *
      * @Assert\NotBlank
      * @Assert\Choice(callback = "getStatuses")
