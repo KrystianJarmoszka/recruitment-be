@@ -10,15 +10,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 abstract class BaseFilter
 {
-    const LIMIT = 20;
+    const LIMIT = 5;
     const GLOBAL_SEARCH_LIMIT = 3;
 
     const DEFAULT_PAGE = 1;
-
-    /**
-     * @var string
-     */
-    protected $title;
 
     /**
      * @var string
@@ -79,26 +74,6 @@ abstract class BaseFilter
     /**
      * @return string
      */
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param string $title
-     *
-     * @return self
-     */
-    public function setTitle(string $title): BaseFilter
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getKeyword(): ?string
     {
         return $this->keyword;
@@ -146,9 +121,9 @@ abstract class BaseFilter
     }
 
     /**
-     * @param int $order
+     * @param int|null $order
      */
-    public function setOrder(int $order)
+    public function setOrder(?int $order)
     {
         $this->order = $order;
     }

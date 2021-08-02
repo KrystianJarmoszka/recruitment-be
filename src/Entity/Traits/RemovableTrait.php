@@ -22,7 +22,7 @@ trait RemovableTrait
      *
      * @Exclude
      */
-    protected $removable;
+    protected $removable = RemovableInterface::NOT_REMOVED;
 
     /**
      * @ORM\PrePersist
@@ -66,7 +66,7 @@ trait RemovableTrait
      * @return $this
      * @throws \Exception
      */
-    public function setRemovable($removable): RemovableTrait
+    public function setRemovable($removable)
     {
         if (!in_array($removable, self::getRemovableOptions())) {
             throw new \Exception('Invalid Removable Option');

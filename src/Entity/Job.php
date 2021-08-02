@@ -18,6 +18,7 @@ use JMS\Serializer\Annotation as Serializer;
 class Job
 {
     use Traits\IdentifiableTrait;
+    use Traits\RemovableTrait;
 
     /**
      * @ORM\Column(type="string", length=150)

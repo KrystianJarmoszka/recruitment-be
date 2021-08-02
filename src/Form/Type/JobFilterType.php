@@ -2,17 +2,17 @@
 
 namespace App\Form\Type;
 
-use App\Repository\Filter\PropertyListFilter;
+use App\Repository\Filter\JobListFilter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class PropertyFilterType
+ * Class JobFilterType
  * @package App\Form\Type
  */
-class PropertyFilterType extends AbstractType
+class JobFilterType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -21,7 +21,7 @@ class PropertyFilterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class, [])
+            ->add('summary', TextType::class, [])
             ->add('page', TextType::class, [])
             ->add('keyword', TextType::class, [])
             ->add('order', TextType::class, []);
@@ -33,7 +33,7 @@ class PropertyFilterType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => PropertyListFilter::class,
+            'data_class' => JobListFilter::class,
             'csrf_protection' => false,
         ));
     }

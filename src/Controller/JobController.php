@@ -3,7 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Job;
+use App\Form\Type\JobFilterType;
 use App\Form\Type\JobType;
+use App\Repository\Filter\JobListFilter;
+use App\Repository\Filter\PropertyListFilter;
+use Knp\Component\Pager\Pagination\AbstractPagination;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,15 +25,35 @@ class JobController extends AbstractController
      * @Route("", name="api_job_get_collection", methods={"GET"})
      *
      * @param Request $request
+     * @param PaginatorInterface $paginator
      * @return Response
      */
-    public function getCollection(Request $request): Response
+    public function getCollection(Request $request, PaginatorInterface $paginator): Response
     {
+        $filter = new JobListFilter();
+        $form = $this->createForm(JobFilterType::class, $filter, ['method' => 'GET']);
+        $form->handleRequest($request);
+
+        if ($this->getFormErrorMessages($form)) {
+            return $this->returnViewResponse($this->getFormErrorMessages($form), Response::HTTP_BAD_REQUEST);
+        }
+
         $jobs = $this->getDoctrine()
             ->getRepository(Job::class)
-            ->findAll();
+            ->filterAndReturn($filter);
 
-        return $this->returnViewResponse($jobs);
+        /** @var AbstractPagination $pagination */
+        $pagination = $paginator->paginate(
+            $jobs,
+            $filter->getPage(),
+            PropertyListFilter::LIMIT
+        );
+
+        return $this->returnCollectionViewResponse(
+            $pagination,
+            Response::HTTP_OK,
+            ['list']
+        );
     }
 
     /**

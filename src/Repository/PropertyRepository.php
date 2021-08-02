@@ -32,12 +32,16 @@ class PropertyRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('e');
 
+        if (!$listFilterModel->getPage() && !$listFilterModel->getLimit()) {
+            $qb->setMaxResults(PropertyListFilter::LIMIT);
+        }
+
         $this->applyFilter($qb, $listFilterModel);
 
         return $qb->getQuery()->getResult();
     }
 
-    public function applyFilter(QueryBuilder $qb, BaseFilter $listFilterModel): PropertyRepository
+    public function applyFilter(QueryBuilder $qb, PropertyListFilter $listFilterModel): PropertyRepository
     {
         $this->hideRemoved($qb);
 
