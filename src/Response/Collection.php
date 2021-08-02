@@ -14,7 +14,7 @@ class Collection
      * @var array
      *
      * @Expose
-     * @Groups({"list", "default", "stream"})
+     * @Groups({"list", "default"})
      */
     protected $data;
 
@@ -22,7 +22,7 @@ class Collection
      * @var integer
      *
      * @Expose
-     * @Groups({"list", "default", "stream"})
+     * @Groups({"list", "default"})
      */
     protected $count;
 
@@ -30,7 +30,7 @@ class Collection
      * @var integer
      *
      * @Expose
-     * @Groups({"list", "default", "stream"})
+     * @Groups({"list", "default"})
      */
     protected $page;
 
@@ -38,7 +38,7 @@ class Collection
      * @var integer
      *
      * @Expose
-     * @Groups({"list", "default", "stream"})
+     * @Groups({"list", "default"})
      */
     protected $pages;
 

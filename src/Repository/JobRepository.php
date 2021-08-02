@@ -55,6 +55,7 @@ class JobRepository extends ServiceEntityRepository
         if ($listFilterModel->getSummary()) {
             $qb->andWhere('e.summary LIKE :name');
             $qb->orWhere('e.description LIKE :name');
+            $qb->orWhere('e.status LIKE :name');
 
             $qb->leftJoin('e.property', 'ep')
                 ->orWhere('ep.name LIKE :name');
